@@ -26,37 +26,55 @@ router.post('/blogs', auth, async (req, res) => {
 
 // GET /blogs?limit=1
 // GET /blogs?sortBy=createdAt:desc
+// router.get('/blogs', auth, async (req, res) => {
+//
+//     const sort = {}
+//
+//
+//     if (req.query.sortBy) {
+//         const parts = req.query.sortBy.split(':')
+//         // grabbing the value in the first array
+//         sort[parts[0]] = parts[1] === 'desc' ? -1 : 1
+//     }
+//
+//     try {
+//         // or
+//         // const blog = await Blog.find({ owner: req.user._id})
+//
+//         await req.user.populate({
+//             path: 'blog',
+//             options: {
+//                 limit: parseInt(req.query.limit),
+//                 skip: parseInt(req.query.skip),
+//                 // property short hand syntax
+//                 sort
+//             }
+//         }).execPopulate()
+//         res.send(req.user.blog)
+//     } catch (e) {
+//         res.status(500).send(e)
+//     }
+//
+//
+// })
+
 router.get('/blogs', auth, async (req, res) => {
 
-    const sort = {}
-
-
-    if (req.query.sortBy) {
-        const parts = req.query.sortBy.split(':')
-        // grabbing the value in the first array
-        sort[parts[0]] = parts[1] === 'desc' ? -1 : 1
-    }
-
     try {
-        // or
-        // const blog = await Blog.find({ owner: req.user._id})
 
-        await req.user.populate({
-            path: 'blog',
-            options: {
-                limit: parseInt(req.query.limit),
-                skip: parseInt(req.query.skip),
-                // property short hand syntax
-                sort
-            }
-        }).execPopulate()
-        res.send(req.user.blog)
+        const blog = await Blog.find({ owner: req.user._id})
+
+        res.send(blog)
     } catch (e) {
         res.status(500).send(e)
     }
 
 
 })
+
+
+
+
 
 
 
