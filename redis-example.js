@@ -29,3 +29,14 @@
 // client.hset('german', 'red', 'rojo')
 //
 // client.hget('german', 'red', console.log)
+
+
+// in redis we cant store direct object
+
+// client.set('colors', JSON.stringify({ red: 'roho' }))
+//
+// // we get a json hence we have to parse it
+// client.get('colors', console.log)
+//
+// client.get('colors', (error, value) => console.log(JSON.parse(value)))
+
