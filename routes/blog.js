@@ -85,11 +85,13 @@ router.get('/blogs', auth, async (req, res) => {
         const blog = await Blog.find({ owner: req.user._id})
 
         console.log("Serving from MongoDb")
+
         res.send(blog)
 
         client.set(req.user.id, JSON.stringify(blog))
 
     } catch (e) {
+
         res.status(500).send(e)
     }
 
