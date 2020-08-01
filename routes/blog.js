@@ -61,19 +61,40 @@ router.post('/blogs', auth, async (req, res) => {
 router.get('/blogs', auth, async (req, res) => {
 
     try {
+        const redis = require("redis");
+        //const redisUrl = 'redis://127.0.0.1:6379'
+        const client = redis.createClient();
+
+        // promisify enables us to use promises in cachedBlogs so that we dont use callbacks, we use promises
+        const util = require('util')
+        client.get = util.promisify(client.get)
+
+
+        // do we have any cached data in redis related to this query?
+        const cachedBlogs = await client.get(req.user.id)
+
+        // if yes, then respond to the request right way and return
+        if (cachedBlogs){
+            console.log("Serving from cache")
+            return res.send(JSON.parse(cachedBlogs))
+        }
+
+
+        // if no, we need to respond to the request and update our cache to store the data
 
         const blog = await Blog.find({ owner: req.user._id})
 
+        console.log("Serving from MongoDb")
         res.send(blog)
+
+        client.set(req.user.id, JSON.stringify(blog))
+
     } catch (e) {
         res.status(500).send(e)
     }
 
 
 })
-
-
-
 
 
 
