@@ -16,19 +16,38 @@ client.get = util.promisify(client.get)
 const exec = mongoose.Query.prototype.exec
 
 //
-mongoose.Query.prototype.exec = function () {
-    console.log("I'M ABOUT TO RUN A QUERY")
+mongoose.Query.prototype.exec = async function () {
+    //console.log("I'M ABOUT TO RUN A QUERY")
 
     // console.log(this.getQuery())
     // console.log(this.mongooseCollection.name)
     // so that we can generate one consistent key and list their collections... user keys are identical but consistent with the blog one
     // therefore we combine them in one object
     // object.assign is used to copy properties from one object to another
-    const key = Object.assign({}, this.getQuery(), {
+    const key = JSON.stringify(Object.assign({}, this.getQuery(), {
         collection: this.mongooseCollection.name
-    })
+    }))
+    //console.log(key)
 
-    console.log(key)
+    // see if we have a value of 'key' in redis
+    const cacheValue = await client.get(key)
 
-    return exec.apply(this, arguments)
+
+    // if we do, return that
+    if (cacheValue) {
+        console.log(cacheValue)
+        return JSON.parse(cacheValue)
+    }
+
+
+
+    // otherwise, issue the query and store the result in redis
+
+    const result = await exec.apply(this, arguments)
+
+    client.set(key, JSON.stringify(result))
+
+
+    return result
+    //console.log(result)
 }
