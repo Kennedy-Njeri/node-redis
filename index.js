@@ -2,6 +2,7 @@ const express = require('express')
 require('./db/mongoose')
 const userRouter = require('./routes/users')
 const blogRouter = require('./routes/blog')
+require('./services/cache')
 
 
 
