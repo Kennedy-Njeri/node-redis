@@ -35,8 +35,9 @@ mongoose.Query.prototype.exec = async function () {
 
     // if we do, return that
     if (cacheValue) {
-        console.log(cacheValue)
-        return JSON.parse(cacheValue)
+        const doc = new this.model(JSON.parse(cacheValue))
+        //console.log(cacheValue)
+        return doc
     }
 
 
