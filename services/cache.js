@@ -15,8 +15,24 @@ client.get = util.promisify(client.get)
 // stores the original to an exec func i.e the copy
 const exec = mongoose.Query.prototype.exec
 
+mongoose.Query.prototype.cache = function () {
+    this.useCache = true
+    // enable it to be chainable in a query e.g .cache()
+    return this
+}
+
+
+
+
 //
 mongoose.Query.prototype.exec = async function () {
+
+
+    if (!this.useCache) {
+        return exec.apply(this, arguments)
+    }
+
+
     //console.log("I'M ABOUT TO RUN A QUERY")
 
     // console.log(this.getQuery())

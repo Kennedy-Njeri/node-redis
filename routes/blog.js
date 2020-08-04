@@ -64,7 +64,7 @@ router.get('/blogs', auth, async (req, res) => {
 
     try {
 
-        const blog = await Blog.find({ owner: req.user._id})
+        const blog = await Blog.find({ owner: req.user._id}).cache()
 
         res.send(blog)
 
