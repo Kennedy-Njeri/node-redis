@@ -35,9 +35,12 @@ mongoose.Query.prototype.exec = async function () {
 
     // if we do, return that
     if (cacheValue) {
-        const doc = new this.model(JSON.parse(cacheValue))
+        const doc = JSON.parse(cacheValue)
         //console.log(cacheValue)
-        return doc
+
+        // check if the doc is an array or object
+        return Array.isArray(doc) ? doc.map(d => new this.model(d)) : new this.model(doc)
+
     }
 
 
