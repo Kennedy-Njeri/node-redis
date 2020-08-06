@@ -6,7 +6,7 @@ const client = redis.createClient();
 
 // promisify enables us to use promises in cachedBlogs so that we dont use callbacks, we use promises
 const util = require('util')
-client.get = util.promisify(client.get)
+client.hget = util.promisify(client.hget)
 
 
 
@@ -15,8 +15,10 @@ client.get = util.promisify(client.get)
 // stores the original to an exec func i.e the copy
 const exec = mongoose.Query.prototype.exec
 
-mongoose.Query.prototype.cache = function () {
+mongoose.Query.prototype.cache = function (options = {}) {
     this.useCache = true
+    this.hashKey = JSON.stringify(options.key || '')
+
     // enable it to be chainable in a query e.g .cache()
     return this
 }
@@ -46,7 +48,7 @@ mongoose.Query.prototype.exec = async function () {
     //console.log(key)
 
     // see if we have a value of 'key' in redis
-    const cacheValue = await client.get(key)
+    const cacheValue = await client.hget(this.hashKey, key)
 
 
     // if we do, return that
@@ -65,7 +67,7 @@ mongoose.Query.prototype.exec = async function () {
 
     const result = await exec.apply(this, arguments)
 
-    client.set(key, JSON.stringify(result))
+    client.hset(this.hashKey, key, JSON.stringify(result), 'EX', 10)
 
 
     return result

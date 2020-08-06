@@ -1,8 +1,8 @@
 // start
 // node-redis:node
 // step
-//  const redis = require("redis")
-//  const client = redis.createClient()
+ const redis = require("redis")
+ const client = redis.createClient()
 
 // we save the data interms of key value
 
