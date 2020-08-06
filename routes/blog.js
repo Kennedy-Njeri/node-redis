@@ -2,12 +2,12 @@ const express = require('express')
 const Blog = require('../models/blog')
 const router = new express.Router()
 const auth = require('../auth/auth')
-const { clearHash } = require('../services/cache')
+const cleanCache = require('../auth/cleanCache')
 
 
 
 // creating a new blog for a user
-router.post('/blogs', auth, async (req, res) => {
+router.post('/blogs', auth, cleanCache, async (req, res) => {
 
     const blog = new Blog({
         ...req.body,
@@ -21,7 +21,7 @@ router.post('/blogs', auth, async (req, res) => {
         res.status(400).send(e)
     }
 
-    clearHash(req.user.id)
+    //clearHash(req.user.id)
 })
 
 
