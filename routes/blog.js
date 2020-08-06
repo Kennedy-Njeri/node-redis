@@ -2,10 +2,11 @@ const express = require('express')
 const Blog = require('../models/blog')
 const router = new express.Router()
 const auth = require('../auth/auth')
+const { clearHash } = require('../services/cache')
 
 
 
-// creating a new stock for a user
+// creating a new blog for a user
 router.post('/blogs', auth, async (req, res) => {
 
     const blog = new Blog({
@@ -20,6 +21,7 @@ router.post('/blogs', auth, async (req, res) => {
         res.status(400).send(e)
     }
 
+    clearHash(req.user.id)
 })
 
 
